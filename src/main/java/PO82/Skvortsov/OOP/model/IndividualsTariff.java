@@ -2,9 +2,10 @@ package PO82.Skvortsov.OOP.model;
 
 public class IndividualsTariff {
     private static final int SIZE_FACTOR = 2;
+    private static final int SERVICE_CHARGE = 50;
 
     private Service[] services;
-    private int numberService;
+    private int size;
 
     public IndividualsTariff() {
         services = new Service[8];
@@ -14,9 +15,9 @@ public class IndividualsTariff {
         services = new Service[size];
     }
 
-    public IndividualsTariff(Service[] services) {
+    public IndividualsTariff(Service... services) {
         this.services = services;
-        numberService = services.length;
+        size = services.length;
     }
 
     public Service get(int index) {
@@ -32,8 +33,28 @@ public class IndividualsTariff {
         return null;
     }
 
-    public void set(Service service, int index) {
+    public Service[] getServices() {
+        Service[] services = new Service[size];
+        for (int i = 0, count = 0; i < this.services.length; i++) {
+            if (this.services[i] != null){
+                services[count] = this.services[i];
+                count++;
+            }
+        }
+        return services;
+    }
+
+    public Service set(Service service, int index) {
+        Service currentService = services[index];
         services[index] = service;
+        if (currentService == null) {
+            size++;
+        }
+        return currentService;
+    }
+
+    public int size() {
+        return size;
     }
 
     public boolean hasServices(String name) {
@@ -45,25 +66,33 @@ public class IndividualsTariff {
         return false;
     }
 
-    public boolean addService(Service service) {
-        ensureCapacity();
-        services[numberService] = service;
-        numberService++;
-        return true;
-    }
 
     public boolean addService(Service service, int index) {
         if (index >= services.length) {
             return false;
         }
+        if (services[index] == null) {
+            size++;
+        }
         services[index] = service;
         return true;
     }
 
-    private void ensureCapacity() {
-        if (numberService >= services.length) {
-            grow();
+    public boolean add(Service service) {
+        services[nullIndex()] = service;
+        size++;
+        return true;
+    }
+
+    private int nullIndex(){
+        int i;
+        for (i = 0; i < services.length; i++){
+            if (services[i] == null){
+                return i;
+            }
         }
+        grow();
+        return ++i;
     }
 
     private void grow() {
@@ -76,23 +105,46 @@ public class IndividualsTariff {
         return shift(index);
     }
 
-    public Service remove(String name){
-        for (int i = 0; i < numberService; i++) {
+    public Service remove(String name) {
+        for (int i = 0; i < size; i++) {
             if (services[i].getName().equals(name)) {
-                return remove(i);
+                return shift(i);
             }
         }
         return null;
     }
 
     private Service shift(int index) {
-        if (index >= services.length){
+        if (index >= services.length) {
             return null;
         }
         Service removeService = services[index];
-        for (int i = index; i < numberService - 1; i++) {
+        for (int i = index; i < size - 1; i++) {
             services[i] = services[i + 1];
         }
+        size--;
         return removeService;
+    }
+
+    public Service[] sortedServiceByCost(){
+        Service[] sortedService = getServices();
+        for(int i = sortedService.length-1 ; i > 0 ; i--) {
+            for (int j = 0; j < i; j++) {
+                if (sortedService[j].getCost() > sortedService[j+1].getCost()){
+                    Service currentService = sortedService[j];
+                    sortedService[j] = sortedService[j+1];
+                    sortedService[j+1] = currentService;
+                }
+            }
+        }
+        return sortedService;
+    }
+
+    public double cost(){
+        double cost = SERVICE_CHARGE;
+        for (Service service: services){
+            cost += service.getCost();
+        }
+        return cost;
     }
 }

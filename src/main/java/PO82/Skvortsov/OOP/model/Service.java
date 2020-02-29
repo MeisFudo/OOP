@@ -2,14 +2,14 @@ package PO82.Skvortsov.OOP.model;
 
 public class Service {
     private static final String DEFAULT_NAME = "интернет 100мб\\\\сек";
-    private static final int DEFAULT_PRICE = 500;
+    private static final int DEFAULT_PRICE = 300;
 
     private String name;
-    private int price;
+    private double cost;
 
-    public Service(String name, int price) {
+    public Service(String name, int cost) {
         this.name = name;
-        this.price = price;
+        this.cost = cost;
     }
 
     public Service() {
@@ -20,15 +20,15 @@ public class Service {
         return name;
     }
 
-    public int getPrice() {
-        return price;
+    public double getCost() {
+        return cost;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setCost(double cost) {
+        this.cost = cost;
     }
 }
