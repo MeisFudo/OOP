@@ -36,7 +36,7 @@ public class IndividualsTariff {
     public Service[] getServices() {
         Service[] services = new Service[size];
         for (int i = 0, count = 0; i < this.services.length; i++) {
-            if (this.services[i] != null){
+            if (this.services[i] != null) {
                 services[count] = this.services[i];
                 count++;
             }
@@ -59,7 +59,7 @@ public class IndividualsTariff {
 
     public boolean hasServices(String name) {
         for (Service service : services) {
-            if (service.getName().equals(name)) {
+            if (service != null && service.getName().equals(name)) {
                 return true;
             }
         }
@@ -67,13 +67,15 @@ public class IndividualsTariff {
     }
 
 
-    public boolean addService(Service service, int index) {
+    public boolean add(Service service, int index) {
         if (index >= services.length) {
             return false;
         }
-        if (services[index] == null) {
-            size++;
+        if (size >= services.length) {
+            grow();
         }
+        size++;
+        System.arraycopy(this.services, index, services, index + 1, this.services.length - index);
         services[index] = service;
         return true;
     }
@@ -84,10 +86,10 @@ public class IndividualsTariff {
         return true;
     }
 
-    private int nullIndex(){
+    private int nullIndex() {
         int i;
-        for (i = 0; i < services.length; i++){
-            if (services[i] == null){
+        for (i = 0; i < services.length; i++) {
+            if (services[i] == null) {
                 return i;
             }
         }
@@ -119,6 +121,7 @@ public class IndividualsTariff {
             return null;
         }
         Service removeService = services[index];
+        services[index] = null;
         for (int i = index; i < size - 1; i++) {
             services[i] = services[i + 1];
         }
@@ -126,24 +129,26 @@ public class IndividualsTariff {
         return removeService;
     }
 
-    public Service[] sortedServiceByCost(){
+    public Service[] sortedServiceByCost() {
         Service[] sortedService = getServices();
-        for(int i = sortedService.length-1 ; i > 0 ; i--) {
+        for (int i = sortedService.length - 1; i > 0; i--) {
             for (int j = 0; j < i; j++) {
-                if (sortedService[j].getCost() > sortedService[j+1].getCost()){
+                if (sortedService[j].getCost() > sortedService[j + 1].getCost()) {
                     Service currentService = sortedService[j];
-                    sortedService[j] = sortedService[j+1];
-                    sortedService[j+1] = currentService;
+                    sortedService[j] = sortedService[j + 1];
+                    sortedService[j + 1] = currentService;
                 }
             }
         }
         return sortedService;
     }
 
-    public double cost(){
+    public double cost() {
         double cost = SERVICE_CHARGE;
-        for (Service service: services){
-            cost += service.getCost();
+        for (Service service : services) {
+            if (service != null) {
+                cost += service.getCost();
+            }
         }
         return cost;
     }
