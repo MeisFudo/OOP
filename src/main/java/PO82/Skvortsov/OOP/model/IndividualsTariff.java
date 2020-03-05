@@ -74,9 +74,9 @@ public class IndividualsTariff {
         if (size >= services.length) {
             grow();
         }
-        size++;
-        System.arraycopy(this.services, index, services, index + 1, this.services.length - index);
+        System.arraycopy(this.services, index, services, index + 1, this.services.length - (index + 1));
         services[index] = service;
+        size++;
         return true;
     }
 
@@ -122,8 +122,8 @@ public class IndividualsTariff {
         }
         Service removeService = services[index];
         services[index] = null;
-        for (int i = index; i < size - 1; i++) {
-            services[i] = services[i + 1];
+        if (size - 1 - index >= 0) {
+            System.arraycopy(services, index + 1, services, index, size - 1 - index);
         }
         size--;
         return removeService;

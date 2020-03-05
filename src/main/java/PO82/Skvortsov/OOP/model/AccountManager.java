@@ -25,8 +25,8 @@ public class AccountManager {
     public Account[] getAccounts() {
         Account[] accounts = new Account[size];
         int count = 0;
-        for (Account account: accounts) {
-            if (account != null){
+        for (Account account : accounts) {
+            if (account != null) {
                 accounts[count] = account;
                 count++;
             }
@@ -34,18 +34,18 @@ public class AccountManager {
         return accounts;
     }
 
-    public IndividualsTariff getTariff(long accountNumber){
-        for (Account account: accounts) {
-            if (accountNumber == account.getNumber()){
+    public IndividualsTariff getTariff(long accountNumber) {
+        for (Account account : accounts) {
+            if (account != null && accountNumber == account.getNumber()) {
                 return account.getTariff();
             }
         }
         return null;
     }
 
-    public IndividualsTariff setTariff(long accountNumber, IndividualsTariff tariff){
+    public IndividualsTariff setTariff(long accountNumber, IndividualsTariff tariff) {
         for (int i = 0; i < accounts.length; i++) {
-            if (accountNumber == accounts[i].getNumber()){
+            if (accounts[i] != null && accountNumber == accounts[i].getNumber()) {
                 IndividualsTariff currentTariff = accounts[i].getTariff();
                 accounts[i].setTariff(tariff);
                 return currentTariff;
@@ -71,10 +71,12 @@ public class AccountManager {
         if (index >= accounts.length) {
             return false;
         }
-        if (accounts[index] == null) {
-            size++;
+        if (size >= accounts.length) {
+            grow();
         }
+        System.arraycopy(this.accounts, index, accounts, index + 1, this.accounts.length - (index + 1));
         accounts[index] = account;
+        size++;
         return true;
     }
 
@@ -84,10 +86,10 @@ public class AccountManager {
         return true;
     }
 
-    private int nullIndex(){
+    private int nullIndex() {
         int i;
-        for (i = 0; i < accounts.length; i++){
-            if (accounts[i] == null){
+        for (i = 0; i < accounts.length; i++) {
+            if (accounts[i] == null) {
                 return i;
             }
         }
@@ -110,8 +112,9 @@ public class AccountManager {
             return null;
         }
         Account removeAccount = accounts[index];
-        for (int i = index; i < size - 1; i++) {
-            accounts[i] = accounts[i + 1];
+        accounts[index] = null;
+        if (size - 1 - index >= 0) {
+            System.arraycopy(accounts, index + 1, accounts, index, size - 1 - index);
         }
         size--;
         return removeAccount;
