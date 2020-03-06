@@ -25,7 +25,7 @@ public class AccountManager {
     public Account[] getAccounts() {
         Account[] accounts = new Account[size];
         int count = 0;
-        for (Account account : accounts) {
+        for (Account account : this.accounts) {
             if (account != null) {
                 accounts[count] = account;
                 count++;
@@ -44,10 +44,10 @@ public class AccountManager {
     }
 
     public IndividualsTariff setTariff(long accountNumber, IndividualsTariff tariff) {
-        for (int i = 0; i < accounts.length; i++) {
-            if (accounts[i] != null && accountNumber == accounts[i].getNumber()) {
-                IndividualsTariff currentTariff = accounts[i].getTariff();
-                accounts[i].setTariff(tariff);
+        for (Account account : accounts) {
+            if (account != null && accountNumber == account.getNumber()) {
+                IndividualsTariff currentTariff = account.getTariff();
+                account.setTariff(tariff);
                 return currentTariff;
             }
         }

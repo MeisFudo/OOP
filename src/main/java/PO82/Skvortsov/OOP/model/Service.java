@@ -1,7 +1,7 @@
 package PO82.Skvortsov.OOP.model;
 
 public class Service {
-    private static final String DEFAULT_NAME = "интернет 100мб\\\\сек";
+    private static final String DEFAULT_NAME = "Internet 100MB\\sec";
     private static final int DEFAULT_PRICE = 300;
 
     private String name;
