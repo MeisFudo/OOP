@@ -1,4 +1,6 @@
-package PO82.Skvortsov.OOP.model;
+package PO82.Skvortsov.OOP.model.tariff;
+
+import PO82.Skvortsov.OOP.model.Service;
 
 public interface Tariff {
 

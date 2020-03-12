@@ -1,6 +1,8 @@
-package PO82.Skvortsov.OOP.model;
+package PO82.Skvortsov.OOP.model.tariff;
 
-public class IndividualsTariff {
+import PO82.Skvortsov.OOP.model.Service;
+
+public class IndividualsTariff implements Tariff {
     private static final int SIZE_FACTOR = 2;
     private static final int SERVICE_CHARGE = 50;
 
@@ -57,9 +59,9 @@ public class IndividualsTariff {
         return size;
     }
 
-    public boolean hasServices(String name) {
+    public boolean hasService(String serviceName) {
         for (Service service : services) {
-            if (service != null && service.getName().equals(name)) {
+            if (service != null && service.getName().equals(serviceName)) {
                 return true;
             }
         }
@@ -107,9 +109,9 @@ public class IndividualsTariff {
         return shift(index);
     }
 
-    public Service remove(String name) {
+    public Service remove(String serviceName) {
         for (int i = 0; i < size; i++) {
-            if (services[i].getName().equals(name)) {
+            if (services[i].getName().equals(serviceName)) {
                 return shift(i);
             }
         }
@@ -129,7 +131,7 @@ public class IndividualsTariff {
         return removeService;
     }
 
-    public Service[] sortedServiceByCost() {
+    public Service[] sortedServicesByCost() {
         Service[] sortedService = getServices();
         for (int i = sortedService.length - 1; i > 0; i--) {
             for (int j = 0; j < i; j++) {

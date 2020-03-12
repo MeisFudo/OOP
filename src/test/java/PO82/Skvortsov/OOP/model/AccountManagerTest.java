@@ -1,5 +1,6 @@
 package PO82.Skvortsov.OOP.model;
 
+import PO82.Skvortsov.OOP.model.tariff.IndividualsTariff;
 import org.junit.Before;
 import org.junit.Test;
 

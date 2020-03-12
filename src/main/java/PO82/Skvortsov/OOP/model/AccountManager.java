@@ -1,5 +1,7 @@
 package PO82.Skvortsov.OOP.model;
 
+import PO82.Skvortsov.OOP.model.tariff.Tariff;
+
 public class AccountManager {
     private static final int SIZE_FACTOR = 2;
     private static final int SERVICE_CHARGE = 50;
@@ -34,7 +36,7 @@ public class AccountManager {
         return accounts;
     }
 
-    public IndividualsTariff getTariff(long accountNumber) {
+    public Tariff getTariff(long accountNumber) {
         for (Account account : accounts) {
             if (account != null && accountNumber == account.getNumber()) {
                 return account.getTariff();
@@ -43,10 +45,10 @@ public class AccountManager {
         return null;
     }
 
-    public IndividualsTariff setTariff(long accountNumber, IndividualsTariff tariff) {
+    public Tariff setTariff(long accountNumber, Tariff tariff) {
         for (Account account : accounts) {
             if (account != null && accountNumber == account.getNumber()) {
-                IndividualsTariff currentTariff = account.getTariff();
+                Tariff currentTariff = account.getTariff();
                 account.setTariff(tariff);
                 return currentTariff;
             }

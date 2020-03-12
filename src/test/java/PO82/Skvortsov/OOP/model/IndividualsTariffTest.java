@@ -1,5 +1,6 @@
 package PO82.Skvortsov.OOP.model;
 
+import PO82.Skvortsov.OOP.model.tariff.IndividualsTariff;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,44 +38,44 @@ public class IndividualsTariffTest {
     public void set() {
         assertEquals(services[0], tariff.set(new Service(NAME, 10), 3));
         assertEquals(4, tariff.size());
-        assertTrue(tariff.hasServices(NAME));
+        assertTrue(tariff.hasService(NAME));
 
         assertNull(tariff.set(new Service(NAME, 10), 5));
         assertEquals(5, tariff.size());
-        assertTrue(tariff.hasServices(NAME));
+        assertTrue(tariff.hasService(NAME));
     }
 
     @Test
     public void add() {
         assertTrue(tariff.add(new Service(NAME, 20), 2));
         assertEquals(tariff.size(), 5);
-        assertTrue(tariff.hasServices(NAME));
+        assertTrue(tariff.hasService(NAME));
     }
 
     @Test
     public void testAdd() {
         assertTrue(tariff.add(new Service(NAME, 20)));
         assertEquals(tariff.size(), 5);
-        assertTrue(tariff.hasServices(NAME));
+        assertTrue(tariff.hasService(NAME));
     }
 
     @Test
     public void remove() {
         assertEquals(tariff.remove(3), services[0]);
         assertEquals(3, tariff.size());
-        assertFalse(tariff.hasServices(NAME + 1));
+        assertFalse(tariff.hasService(NAME + 1));
     }
 
     @Test
     public void testRemove() {
         assertEquals(tariff.remove(NAME + 1), services[0]);
         assertEquals(3, tariff.size());
-        assertFalse(tariff.hasServices(NAME + 1));
+        assertFalse(tariff.hasService(NAME + 1));
     }
 
     @Test
-    public void sortedServiceByCost() {
-        assertArrayEquals(tariff.sortedServiceByCost(), services);
+    public void sortedServicesByCost() {
+        assertArrayEquals(tariff.sortedServicesByCost(), services);
     }
 
     @Test

@@ -1,10 +1,13 @@
 package PO82.Skvortsov.OOP.model;
 
+import PO82.Skvortsov.OOP.model.tariff.IndividualsTariff;
+import PO82.Skvortsov.OOP.model.tariff.Tariff;
+
 public class Account {
 
     private long number;
     private Person person;
-    private IndividualsTariff tariff;
+    private Tariff tariff;
 
     public Account(long number, Person person, IndividualsTariff tariff) {
         this.number = number;
@@ -26,7 +29,7 @@ public class Account {
         return person;
     }
 
-    public IndividualsTariff getTariff() {
+    public Tariff getTariff() {
         return tariff;
     }
 
@@ -34,7 +37,7 @@ public class Account {
         this.person = person;
     }
 
-    public void setTariff(IndividualsTariff tariff) {
+    public void setTariff(Tariff tariff) {
         this.tariff = tariff;
     }
 }
