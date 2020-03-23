@@ -6,7 +6,7 @@ public class Node {
     private Service value;
     private Node next, previous;
 
-    public Node(Service value, Node next,Node previous) {
+    public Node(Node next,Node previous, Service value) {
         this.value = value;
         this.next = next;
         this.previous = previous;
