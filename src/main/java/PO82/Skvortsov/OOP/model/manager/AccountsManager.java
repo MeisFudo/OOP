@@ -1,8 +1,9 @@
-package PO82.Skvortsov.OOP.model;
+package PO82.Skvortsov.OOP.model.manager;
 
+import PO82.Skvortsov.OOP.model.account.Account;
 import PO82.Skvortsov.OOP.model.tariff.Tariff;
 
-public class AccountManager {
+public class AccountsManager {
     private static final int SIZE_FACTOR = 2;
     private static final int SERVICE_CHARGE = 50;
 
@@ -10,11 +11,11 @@ public class AccountManager {
     private int size;
 
 
-    public AccountManager(int size) {
+    public AccountsManager(int size) {
         accounts = new Account[size];
     }
 
-    public AccountManager(Account... accounts) {
+    public AccountsManager(Account... accounts) {
         this.accounts = accounts;
         size = accounts.length;
     }

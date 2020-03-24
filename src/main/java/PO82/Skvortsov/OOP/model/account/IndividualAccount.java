@@ -1,21 +1,23 @@
-package PO82.Skvortsov.OOP.model;
+package PO82.Skvortsov.OOP.model.account;
 
+import PO82.Skvortsov.OOP.model.Person;
+import PO82.Skvortsov.OOP.model.Service;
 import PO82.Skvortsov.OOP.model.tariff.IndividualsTariff;
 import PO82.Skvortsov.OOP.model.tariff.Tariff;
 
-public class Account {
+public class IndividualAccount implements Account{
 
     private long number;
     private Person person;
     private Tariff tariff;
 
-    public Account(long number, Person person, IndividualsTariff tariff) {
+    public IndividualAccount(long number, Person person, IndividualsTariff tariff) {
         this.number = number;
         this.person = person;
         this.tariff = tariff;
     }
 
-    public Account(long number, Person person) {
+    public IndividualAccount(long number, Person person) {
         this.number = number;
         this.person = person;
         tariff = new IndividualsTariff(new Service());
