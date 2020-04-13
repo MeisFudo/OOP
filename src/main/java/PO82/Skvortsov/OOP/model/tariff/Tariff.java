@@ -1,6 +1,7 @@
 package PO82.Skvortsov.OOP.model.tariff;
 
 import PO82.Skvortsov.OOP.model.Service;
+import PO82.Skvortsov.OOP.model.ServiceTypes;
 
 public interface Tariff {
 
@@ -23,6 +24,8 @@ public interface Tariff {
     int size();
 
     Service[] getServices();
+
+    Service[] getServices(ServiceTypes serviceType);
 
     Service[] sortedServicesByCost();
 

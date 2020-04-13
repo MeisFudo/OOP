@@ -1,6 +1,7 @@
 package PO82.Skvortsov.OOP.model.tariff;
 
 import PO82.Skvortsov.OOP.model.Service;
+import PO82.Skvortsov.OOP.model.ServiceTypes;
 import PO82.Skvortsov.OOP.model.list.Node;
 
 public class EntityTariff implements Tariff {
@@ -155,7 +156,26 @@ public class EntityTariff implements Tariff {
         Service[] services = new Service[size];
         int index = 0;
         for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-            services[index++] = currentNode.getValue();
+            services[index] = currentNode.getValue();
+            index++;
+        }
+        return services;
+    }
+
+    public Service[] getServices(ServiceTypes type){
+        int count = 0;
+        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
+            if (currentNode.getValue().getType() == type){
+                count++;
+            }
+        }
+        Service[] services = new Service[count];
+        count = 0;
+        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
+            if (currentNode.getValue().getType() == type){
+                services[count] = currentNode.getValue();
+                count++;
+            }
         }
         return services;
     }

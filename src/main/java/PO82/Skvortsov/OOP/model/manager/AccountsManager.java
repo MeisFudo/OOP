@@ -1,7 +1,18 @@
 package PO82.Skvortsov.OOP.model.manager;
 
+import PO82.Skvortsov.OOP.model.Service;
+import PO82.Skvortsov.OOP.model.ServiceTypes;
 import PO82.Skvortsov.OOP.model.account.Account;
+import PO82.Skvortsov.OOP.model.account.EntityAccount;
+import PO82.Skvortsov.OOP.model.account.IndividualAccount;
+import PO82.Skvortsov.OOP.model.tariff.EntityTariff;
+import PO82.Skvortsov.OOP.model.tariff.IndividualsTariff;
 import PO82.Skvortsov.OOP.model.tariff.Tariff;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 public class AccountsManager {
     private static final int SIZE_FACTOR = 2;
@@ -24,7 +35,6 @@ public class AccountsManager {
         return accounts[index];
     }
 
-
     public Account[] getAccounts() {
         Account[] accounts = new Account[size];
         int count = 0;
@@ -35,6 +45,45 @@ public class AccountsManager {
             }
         }
         return accounts;
+    }
+
+    public Account[] getAccounts(ServiceTypes serviceType) {
+        LinkedList<Account> accounts = new LinkedList<>();
+        for (Account account : this.accounts) {
+            if (checkServiceType(account.getTariff(),serviceType)) {
+                accounts.add(account);
+            }
+        }
+        return (Account[]) accounts.toArray();
+    }
+
+    public Account[] getEntityAccount() {
+        LinkedList<Account> accounts = new LinkedList<>();
+        for (Account account : this.accounts) {
+            if (account.getClass() == EntityAccount.class) {
+                accounts.add(account);
+            }
+        }
+        return accounts.toArray(new Account[0]);
+    }
+
+    public Account[] getIndividualAccount() {
+        LinkedList<Account> accounts = new LinkedList<>();
+        for (Account account : this.accounts) {
+            if (account.getClass() == IndividualAccount.class) {
+                accounts.add(account);
+            }
+        }
+        return accounts.toArray(new Account[0]);
+    }
+
+    private boolean checkServiceType(Tariff tariff, ServiceTypes type){
+        for (Service service : tariff.getServices()){
+            if (service.getType() == type){
+                return true;
+            }
+        }
+        return false;
     }
 
     public Tariff getTariff(long accountNumber) {
@@ -118,6 +167,7 @@ public class AccountsManager {
         accounts[index] = null;
         if (size - 1 - index >= 0) {
             System.arraycopy(accounts, index + 1, accounts, index, size - 1 - index);
+            accounts[size - 1] = null;
         }
         size--;
         return removeAccount;

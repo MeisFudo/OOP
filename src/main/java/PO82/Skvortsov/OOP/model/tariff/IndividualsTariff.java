@@ -1,6 +1,9 @@
 package PO82.Skvortsov.OOP.model.tariff;
 
 import PO82.Skvortsov.OOP.model.Service;
+import PO82.Skvortsov.OOP.model.ServiceTypes;
+
+import java.util.LinkedList;
 
 public class IndividualsTariff implements Tariff {
     private static final int SIZE_FACTOR = 2;
@@ -45,6 +48,17 @@ public class IndividualsTariff implements Tariff {
         }
         return services;
     }
+
+    public Service[] getServices(ServiceTypes type){
+        LinkedList<Service> services = new LinkedList<>();
+        for (Service service: this.services) {
+            if (service != null && service.getType() == type){
+                services.add(service);
+            }
+        }
+        return services.toArray(new Service[0]);
+    }
+
 
     public Service set(Service service, int index) {
         Service currentService = services[index];
@@ -126,6 +140,7 @@ public class IndividualsTariff implements Tariff {
         services[index] = null;
         if (size - 1 - index >= 0) {
             System.arraycopy(services, index + 1, services, index, size - 1 - index);
+            services[size - 1] = null;
         }
         size--;
         return removeService;

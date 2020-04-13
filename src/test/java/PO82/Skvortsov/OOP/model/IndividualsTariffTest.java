@@ -10,15 +10,16 @@ public class IndividualsTariffTest {
 
     private static final double DELTA = 0.1;
     private static final String NAME = "name";
+    private static final ServiceTypes serviceTypes = ServiceTypes.PHONE;
 
     private IndividualsTariff tariff;
     private Service[] services;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         services = new Service[4];
         for (int i = 0; i < services.length; i++) {
-            services[i] = new Service(NAME + (i + 1), (i + 1) * 10);
+            services[i] = new Service(NAME + (i + 1), (i + 1) * 10, serviceTypes);
         }
         tariff = new IndividualsTariff();
         for (int i = services.length - 1; i >= 0; i--) {
@@ -36,25 +37,25 @@ public class IndividualsTariffTest {
 
     @Test
     public void set() {
-        assertEquals(services[0], tariff.set(new Service(NAME, 10), 3));
+        assertEquals(services[0], tariff.set(new Service(NAME, 10, serviceTypes), 3));
         assertEquals(4, tariff.size());
         assertTrue(tariff.hasService(NAME));
 
-        assertNull(tariff.set(new Service(NAME, 10), 5));
+        assertNull(tariff.set(new Service(NAME, 10, serviceTypes), 5));
         assertEquals(5, tariff.size());
         assertTrue(tariff.hasService(NAME));
     }
 
     @Test
     public void add() {
-        assertTrue(tariff.add(new Service(NAME, 20), 2));
+        assertTrue(tariff.add(new Service(NAME, 20, serviceTypes), 2));
         assertEquals(tariff.size(), 5);
         assertTrue(tariff.hasService(NAME));
     }
 
     @Test
     public void testAdd() {
-        assertTrue(tariff.add(new Service(NAME, 20)));
+        assertTrue(tariff.add(new Service(NAME, 20, serviceTypes)));
         assertEquals(tariff.size(), 5);
         assertTrue(tariff.hasService(NAME));
     }
