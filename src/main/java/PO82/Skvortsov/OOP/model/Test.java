@@ -11,6 +11,7 @@ public class Test {
     public static void main(String[] args) {
         //lab2Tests();
         lab3Tests();
+        lab4Tests();
     }
 
     public static void lab2Tests(){
@@ -61,6 +62,10 @@ public class Test {
         AccountsManager accountsManager = new AccountsManager(individualAccount, entityAccount);
         accountsManager.getIndividualAccount();
         accountsManager.getEntityAccount();
+    }
+
+    public static void lab4Tests(){
+
     }
 
     private static void print(Service... services){
