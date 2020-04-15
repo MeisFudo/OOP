@@ -172,4 +172,28 @@ public class AccountsManager {
         size--;
         return removeAccount;
     }
+
+    public boolean remove(Account account){
+        return this.remove(this.indexOf(account)) != null;
+    }
+
+    public int indexOf(Account account){
+        for (int i = 0; i < accounts.length;i++){
+            if (accounts[i] != null && accounts[i].equals(account)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (Account account: accounts){
+            if (account != null){
+                result.append(account).append(System.lineSeparator());
+            }
+        }
+        return result.toString();
+    }
 }

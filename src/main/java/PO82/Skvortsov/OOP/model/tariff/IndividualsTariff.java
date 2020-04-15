@@ -3,6 +3,7 @@ package PO82.Skvortsov.OOP.model.tariff;
 import PO82.Skvortsov.OOP.model.Service;
 import PO82.Skvortsov.OOP.model.ServiceTypes;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 public class IndividualsTariff implements Tariff {
@@ -49,10 +50,10 @@ public class IndividualsTariff implements Tariff {
         return services;
     }
 
-    public Service[] getServices(ServiceTypes type){
+    public Service[] getServices(ServiceTypes type) {
         LinkedList<Service> services = new LinkedList<>();
-        for (Service service: this.services) {
-            if (service != null && service.getType() == type){
+        for (Service service : this.services) {
+            if (service != null && service.getType() == type) {
                 services.add(service);
             }
         }
@@ -168,5 +169,63 @@ public class IndividualsTariff implements Tariff {
             }
         }
         return cost;
+    }
+
+    @Override
+    public Boolean remove(Service service) {
+        return  this.remove(this.indexOf(service)) != null;
+    }
+
+    @Override
+    public int indexOf(Service service) {
+        for (int i = 0; i < services.length;i++) {
+            if (services[i] != null && services[i].equals(service)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public int lastIndexOf(Service service) {
+        for (int i = services.length - 1; i >= 0; i--) {
+            if (services[i] != null && services[i].equals(service)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (Service service: this.getServices()) {
+            result.append(service.toString()).append(System.lineSeparator());
+        }
+        return result.toString();
+    }
+
+    @Override
+    public int hashCode(){
+        int hashCode = 31;
+        for (Service service: this.getServices()) {
+            hashCode *= service.hashCode();
+        }
+        return hashCode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IndividualsTariff that = (IndividualsTariff) o;
+        return size == that.size &&
+                Arrays.equals(services, that.services);
+    }
+
+
+    @Override
+    public Tariff clone() throws CloneNotSupportedException{
+        return (Tariff) super.clone();
     }
 }

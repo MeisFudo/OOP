@@ -162,17 +162,17 @@ public class EntityTariff implements Tariff {
         return services;
     }
 
-    public Service[] getServices(ServiceTypes type){
+    public Service[] getServices(ServiceTypes type) {
         int count = 0;
         for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-            if (currentNode.getValue().getType() == type){
+            if (currentNode.getValue().getType() == type) {
                 count++;
             }
         }
         Service[] services = new Service[count];
         count = 0;
         for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-            if (currentNode.getValue().getType() == type){
+            if (currentNode.getValue().getType() == type) {
                 services[count] = currentNode.getValue();
                 count++;
             }
@@ -202,5 +202,73 @@ public class EntityTariff implements Tariff {
             cost += currentNode.getValue().getCost();
         }
         return cost;
+    }
+
+    @Override
+    public Boolean remove(Service service) {
+        return  this.remove(this.indexOf(service)) != null;
+    }
+
+    @Override
+    public int indexOf(Service service) {
+        int count = 0;
+        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
+            if (service.equals(currentNode.getValue())){
+                return count;
+            }
+            count++;
+        }
+        return -1;
+    }
+
+    @Override
+    public int lastIndexOf(Service service) {
+        int count = size - 1;
+        for (Node currentNode = this.tail; currentNode != null; currentNode = currentNode.getPrevious()) {
+            if (service.equals(currentNode.getValue())){
+                return count;
+            }
+            count--;
+        }
+        return -1;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
+            result.append(currentNode.getValue().toString()).append(System.lineSeparator());
+        }
+        return result.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        int hashCode = 71;
+        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
+            hashCode *= currentNode.getValue().hashCode();
+        }
+        return hashCode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EntityTariff that = (EntityTariff) o;
+        if (size != that.size()) return false;
+        int count = 0;
+        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
+            if (!currentNode.getValue().equals(that.get(count))) {
+                return false;
+            }
+            count++;
+        }
+        return true;
+    }
+
+    @Override
+    public Tariff clone() throws CloneNotSupportedException {
+        return (Tariff) super.clone();
     }
 }

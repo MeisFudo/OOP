@@ -3,7 +3,7 @@ package PO82.Skvortsov.OOP.model.tariff;
 import PO82.Skvortsov.OOP.model.Service;
 import PO82.Skvortsov.OOP.model.ServiceTypes;
 
-public interface Tariff {
+public interface Tariff extends Cloneable {
 
     boolean add(Service service);
 
@@ -30,4 +30,19 @@ public interface Tariff {
     Service[] sortedServicesByCost();
 
     double cost();
+
+    Boolean remove(Service service);
+
+    int indexOf(Service service);
+
+    int lastIndexOf(Service service);
+
+    String toString();
+
+    int hashCode();
+
+    boolean equals(Object obj);
+
+    Tariff clone() throws CloneNotSupportedException;
+
 }
