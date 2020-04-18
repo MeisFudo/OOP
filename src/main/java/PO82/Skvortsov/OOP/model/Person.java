@@ -7,6 +7,9 @@ public class Person {
     private String sName;
 
     public Person(String fName, String sName) {
+        if (Objects.isNull(fName) || Objects.isNull(sName)) {
+            throw new NullPointerException();
+        }
         this.fName = fName;
         this.sName = sName;
     }

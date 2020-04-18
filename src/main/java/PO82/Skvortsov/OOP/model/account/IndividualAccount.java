@@ -5,21 +5,24 @@ import PO82.Skvortsov.OOP.model.Service;
 import PO82.Skvortsov.OOP.model.tariff.IndividualsTariff;
 import PO82.Skvortsov.OOP.model.tariff.Tariff;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class IndividualAccount extends AbstractAccount {
 
     private Person person;
 
-    public IndividualAccount(long number, Person person, IndividualsTariff tariff) {
-        super(number,tariff);
+    public IndividualAccount(long number, Person person, IndividualsTariff tariff, LocalDate registrationDate) {
+        super(number,tariff, registrationDate);
+        if (Objects.isNull(person)) {
+            throw new NullPointerException();
+        }
         this.person = person;
 
     }
 
     public IndividualAccount(long number, Person person) {
-        super(number,new IndividualsTariff(new Service()));
-        this.person = person;
+        this(number, person,new IndividualsTariff(new Service()), LocalDate.now());
     }
 
     public Person getPerson() {
@@ -27,6 +30,9 @@ public class IndividualAccount extends AbstractAccount {
     }
 
     public void setPerson(Person person) {
+        if (Objects.isNull(person)) {
+            throw new NullPointerException();
+        }
         this.person = person;
     }
 

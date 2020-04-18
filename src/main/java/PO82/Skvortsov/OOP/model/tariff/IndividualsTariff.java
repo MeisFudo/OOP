@@ -3,8 +3,12 @@ package PO82.Skvortsov.OOP.model.tariff;
 import PO82.Skvortsov.OOP.model.Service;
 import PO82.Skvortsov.OOP.model.ServiceTypes;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public class IndividualsTariff implements Tariff {
     private static final int SIZE_FACTOR = 2;
@@ -22,15 +26,18 @@ public class IndividualsTariff implements Tariff {
     }
 
     public IndividualsTariff(Service... services) {
+        checkIsNull(services);
         this.services = services;
         size = services.length;
     }
 
     public Service get(int index) {
+        checkIndex(index);
         return services[index];
     }
 
     public Service get(String name) {
+        checkIsNull(name);
         for (Service service : services) {
             if (service.getName().equals(name)) {
                 return service;
@@ -51,6 +58,7 @@ public class IndividualsTariff implements Tariff {
     }
 
     public Service[] getServices(ServiceTypes type) {
+        checkIsNull(type);
         LinkedList<Service> services = new LinkedList<>();
         for (Service service : this.services) {
             if (service != null && service.getType() == type) {
@@ -62,6 +70,8 @@ public class IndividualsTariff implements Tariff {
 
 
     public Service set(Service service, int index) {
+        checkIsNull(service);
+        checkIndex(index);
         Service currentService = services[index];
         services[index] = service;
         if (currentService == null) {
@@ -75,6 +85,7 @@ public class IndividualsTariff implements Tariff {
     }
 
     public boolean hasService(String serviceName) {
+        checkIsNull(serviceName);
         for (Service service : services) {
             if (service != null && service.getName().equals(serviceName)) {
                 return true;
@@ -85,6 +96,8 @@ public class IndividualsTariff implements Tariff {
 
 
     public boolean add(Service service, int index) {
+        checkIsNull(service);
+        checkIndex(index);
         if (index >= services.length) {
             return false;
         }
@@ -98,6 +111,7 @@ public class IndividualsTariff implements Tariff {
     }
 
     public boolean add(Service service) {
+        checkIsNull(service);
         services[nullIndex()] = service;
         size++;
         return true;
@@ -121,19 +135,22 @@ public class IndividualsTariff implements Tariff {
     }
 
     public Service remove(int index) {
+        checkIndex(index);
         return shift(index);
     }
 
     public Service remove(String serviceName) {
+        checkIsNull(serviceName);
         for (int i = 0; i < size; i++) {
             if (services[i].getName().equals(serviceName)) {
                 return shift(i);
             }
         }
-        return null;
+        throw new NoSuchElementException();
     }
 
     private Service shift(int index) {
+        checkIndex(index);
         if (index >= services.length) {
             return null;
         }
@@ -165,7 +182,13 @@ public class IndividualsTariff implements Tariff {
         double cost = SERVICE_CHARGE;
         for (Service service : services) {
             if (service != null) {
+                if (Period.between(service.getActivationDate(), LocalDate.now()).getMonths() < 1){
+                    cost += service.getCost() *
+                            Period.between(service.getActivationDate(), LocalDate.now()).getDays() /
+                            service.getActivationDate().lengthOfMonth();
+                } else {
                 cost += service.getCost();
+                }
             }
         }
         return cost;
@@ -173,11 +196,13 @@ public class IndividualsTariff implements Tariff {
 
     @Override
     public Boolean remove(Service service) {
+        checkIsNull(service);
         return  this.remove(this.indexOf(service)) != null;
     }
 
     @Override
     public int indexOf(Service service) {
+        checkIsNull(service);
         for (int i = 0; i < services.length;i++) {
             if (services[i] != null && services[i].equals(service)){
                 return i;
@@ -188,12 +213,25 @@ public class IndividualsTariff implements Tariff {
 
     @Override
     public int lastIndexOf(Service service) {
+        checkIsNull(service);
         for (int i = services.length - 1; i >= 0; i--) {
             if (services[i] != null && services[i].equals(service)){
                 return i;
             }
         }
         return -1;
+    }
+
+    private void checkIsNull(Object o){
+        if (Objects.isNull(o)){
+            throw new NullPointerException();
+        }
+    }
+
+    private void checkIndex(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        }
     }
 
     @Override

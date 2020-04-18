@@ -1,5 +1,6 @@
 package PO82.Skvortsov.OOP.model;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public final class Service implements Cloneable {
@@ -9,15 +10,23 @@ public final class Service implements Cloneable {
     private final String name;
     private final double cost;
     private final ServiceTypes type;
+    private LocalDate activationDate;
 
-    public Service(String name, int cost, ServiceTypes type) {
+    public Service(String name, int cost, ServiceTypes type, LocalDate activationDate) {
+        if (Objects.isNull(name) || Objects.isNull(type) || Objects.isNull(activationDate)) {
+            throw new NullPointerException();
+        }
+        else if( cost < 0 || activationDate.isAfter(LocalDate.now())){
+            throw new IllegalArgumentException();
+        }
         this.name = name;
         this.cost = cost;
         this.type = type;
+        this.activationDate = activationDate;
     }
 
     public Service() {
-        this(DEFAULT_NAME, DEFAULT_PRICE, ServiceTypes.INTERNET);
+        this(DEFAULT_NAME, DEFAULT_PRICE, ServiceTypes.INTERNET, LocalDate.now());
     }
 
     public String getName() {
@@ -32,9 +41,13 @@ public final class Service implements Cloneable {
         return type;
     }
 
+    public LocalDate getActivationDate() {
+        return activationDate;
+    }
+
     @Override
     public String toString() {
-        return String.format("%.40s\\\\%.2fр.", name, cost);
+        return String.format("%.40s\\\\%.2fр.\\\\%s", name, cost, activationDate.toString());
     }
 
     @Override
@@ -44,16 +57,17 @@ public final class Service implements Cloneable {
         Service service = (Service) o;
         return Double.compare(service.cost, cost) == 0 &&
                 Objects.equals(name, service.name) &&
-                type == service.type;
+                type == service.type &&
+                activationDate.equals(service.activationDate);
     }
 
     @Override
     public int hashCode() {
-        return (int) (name.hashCode() * cost * type.hashCode());
+        return (int) (name.hashCode() * cost * type.hashCode() * activationDate.hashCode());
     }
 
     @Override
-    public Service clone() throws CloneNotSupportedException{
+    public Service clone() throws CloneNotSupportedException {
         return (Service) super.clone();
     }
 }

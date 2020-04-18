@@ -1,5 +1,7 @@
 package PO82.Skvortsov.OOP.model.manager;
 
+import PO82.Skvortsov.OOP.model.DublicateAccountNumberException;
+import PO82.Skvortsov.OOP.model.IllegalAccountNumber;
 import PO82.Skvortsov.OOP.model.Service;
 import PO82.Skvortsov.OOP.model.ServiceTypes;
 import PO82.Skvortsov.OOP.model.account.Account;
@@ -9,10 +11,7 @@ import PO82.Skvortsov.OOP.model.tariff.EntityTariff;
 import PO82.Skvortsov.OOP.model.tariff.IndividualsTariff;
 import PO82.Skvortsov.OOP.model.tariff.Tariff;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class AccountsManager {
     private static final int SIZE_FACTOR = 2;
@@ -27,6 +26,7 @@ public class AccountsManager {
     }
 
     public AccountsManager(Account... accounts) {
+        checkIsNull(accounts);
         this.accounts = accounts;
         size = accounts.length;
     }
@@ -48,9 +48,10 @@ public class AccountsManager {
     }
 
     public Account[] getAccounts(ServiceTypes serviceType) {
+        checkIsNull(serviceType);
         LinkedList<Account> accounts = new LinkedList<>();
         for (Account account : this.accounts) {
-            if (checkServiceType(account.getTariff(),serviceType)) {
+            if (checkServiceType(account.getTariff(), serviceType)) {
                 accounts.add(account);
             }
         }
@@ -77,25 +78,46 @@ public class AccountsManager {
         return accounts.toArray(new Account[0]);
     }
 
-    private boolean checkServiceType(Tariff tariff, ServiceTypes type){
-        for (Service service : tariff.getServices()){
-            if (service.getType() == type){
+    private boolean checkServiceType(Tariff tariff, ServiceTypes type) {
+        checkIsNull(tariff);
+        checkIsNull(type);
+        for (Service service : tariff.getServices()) {
+            if (service.getType() == type) {
                 return true;
             }
         }
         return false;
     }
 
+    public Account getAccount(long accountNumber) {
+        if (accountNumber < 1000000000001L || accountNumber > 999999999999999L) {
+            throw new IllegalAccountNumber();
+        }
+        for (Account account : accounts) {
+            if (account != null && accountNumber == account.getNumber()) {
+                return account;
+            }
+        }
+        throw new NoSuchElementException();
+    }
+
     public Tariff getTariff(long accountNumber) {
+        if (accountNumber < 1000000000001L || accountNumber > 999999999999999L) {
+            throw new IllegalAccountNumber();
+        }
         for (Account account : accounts) {
             if (account != null && accountNumber == account.getNumber()) {
                 return account.getTariff();
             }
         }
-        return null;
+        throw new NoSuchElementException();
     }
 
     public Tariff setTariff(long accountNumber, Tariff tariff) {
+        checkIsNull(tariff);
+        if (accountNumber < 1000000000001L || accountNumber > 999999999999999L) {
+            throw new IllegalAccountNumber();
+        }
         for (Account account : accounts) {
             if (account != null && accountNumber == account.getNumber()) {
                 Tariff currentTariff = account.getTariff();
@@ -103,10 +125,13 @@ public class AccountsManager {
                 return currentTariff;
             }
         }
-        return null;
+        throw new NoSuchElementException();
     }
 
-    public Account set(Account account, int index) {
+    public Account set(Account account, int index) throws DublicateAccountNumberException {
+        checkAccountNumber(account.getNumber());
+        checkIsNull(account);
+        checkIndex(index);
         Account currentAccount = accounts[index];
         accounts[index] = account;
         if (currentAccount == null) {
@@ -119,7 +144,10 @@ public class AccountsManager {
         return size;
     }
 
-    public boolean add(Account account, int index) {
+    public boolean add(Account account, int index) throws DublicateAccountNumberException {
+        checkAccountNumber(account.getNumber());
+        checkIsNull(account);
+        checkIndex(index);
         if (index >= accounts.length) {
             return false;
         }
@@ -132,10 +160,20 @@ public class AccountsManager {
         return true;
     }
 
-    public boolean add(Account account) {
+    public boolean add(Account account) throws DublicateAccountNumberException {
+        checkAccountNumber(account.getNumber());
+        checkIsNull(account);
         accounts[nullIndex()] = account;
         size++;
         return true;
+    }
+
+    private void checkAccountNumber(long accountNumber) throws DublicateAccountNumberException {
+        for (Account account : this.accounts) {
+            if (account.getNumber() == accountNumber){
+                throw new DublicateAccountNumberException();
+            }
+        }
     }
 
     private int nullIndex() {
@@ -156,10 +194,12 @@ public class AccountsManager {
     }
 
     public Account remove(int index) {
+        checkIndex(index);
         return shift(index);
     }
 
     private Account shift(int index) {
+        checkIndex(index);
         if (index >= accounts.length) {
             return null;
         }
@@ -173,24 +213,39 @@ public class AccountsManager {
         return removeAccount;
     }
 
-    public boolean remove(Account account){
+    public boolean remove(Account account) {
+        checkIsNull(account);
         return this.remove(this.indexOf(account)) != null;
     }
 
-    public int indexOf(Account account){
-        for (int i = 0; i < accounts.length;i++){
-            if (accounts[i] != null && accounts[i].equals(account)){
+    public int indexOf(Account account) {
+        checkIsNull(account);
+        for (int i = 0; i < accounts.length; i++) {
+            if (accounts[i] != null && accounts[i].equals(account)) {
                 return i;
             }
         }
         return -1;
     }
 
+    private void checkIsNull(Object o) {
+        if (Objects.isNull(o)) {
+            throw new NullPointerException();
+        }
+    }
+
+    private void checkIndex(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+    }
+
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        for (Account account: accounts){
-            if (account != null){
+        for (Account account : accounts) {
+            if (account != null) {
                 result.append(account).append(System.lineSeparator());
             }
         }

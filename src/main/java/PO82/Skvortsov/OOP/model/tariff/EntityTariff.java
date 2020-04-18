@@ -4,6 +4,9 @@ import PO82.Skvortsov.OOP.model.Service;
 import PO82.Skvortsov.OOP.model.ServiceTypes;
 import PO82.Skvortsov.OOP.model.list.Node;
 
+import java.util.NoSuchElementException;
+import java.util.Objects;
+
 public class EntityTariff implements Tariff {
     private static final int SERVICE_CHARGE = 50;
 
@@ -17,6 +20,7 @@ public class EntityTariff implements Tariff {
     }
 
     public EntityTariff(Service... services) {
+        checkIsNull(services);
         for (Service service : services) {
             add(service);
         }
@@ -24,6 +28,7 @@ public class EntityTariff implements Tariff {
 
     @Override
     public boolean add(Service service) {
+        checkIsNull(service);
         if (head == null) {
             head = new Node(null, null, service);
         } else {
@@ -37,6 +42,8 @@ public class EntityTariff implements Tariff {
 
     @Override
     public boolean add(Service service, int index) {
+        checkIsNull(service);
+        checkIndex(index);
         if (index >= size) {
             Node currentNode = tail == null ? head : tail;
             tail = new Node(null, currentNode, service);
@@ -56,6 +63,7 @@ public class EntityTariff implements Tariff {
 
     @Override
     public Service get(int index) {
+        checkIndex(index);
         if (index < size) {
             int counter = 0;
             for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
@@ -70,6 +78,7 @@ public class EntityTariff implements Tariff {
 
     @Override
     public Service get(String serviceName) {
+        checkIsNull(serviceName);
         for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
             if (currentNode.getValue().getName().equals(serviceName)) {
                 return currentNode.getValue();
@@ -80,6 +89,7 @@ public class EntityTariff implements Tariff {
 
     @Override
     public boolean hasService(String serviceName) {
+        checkIsNull(serviceName);
         for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
             if (currentNode.getValue().getName().equals(serviceName)) {
                 return true;
@@ -90,6 +100,8 @@ public class EntityTariff implements Tariff {
 
     @Override
     public Service set(Service service, int index) {
+        checkIsNull(service);
+        checkIndex(index);
         if (index >= size) {
             Node currentNode = tail == null ? head : tail;
             tail = new Node(null, currentNode, service);
@@ -111,27 +123,24 @@ public class EntityTariff implements Tariff {
 
     @Override
     public Service remove(int index) {
-        if (checkIndexToRange(index)) {
-            int counter = 0;
-            for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-                if (counter == index) {
-                    currentNode.getPrevious().setNext(currentNode.getNext());
-                    currentNode.getNext().setPrevious(currentNode.getPrevious());
-                    size--;
-                    return currentNode.getValue();
-                }
-                counter++;
+        checkIndex(index);
+        int counter = 0;
+        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
+            if (counter == index) {
+                currentNode.getPrevious().setNext(currentNode.getNext());
+                currentNode.getNext().setPrevious(currentNode.getPrevious());
+                size--;
+                return currentNode.getValue();
             }
+            counter++;
         }
-        return null;
-    }
 
-    private boolean checkIndexToRange(int index) {
-        return index >= 0 && index < this.size;
+        return null;
     }
 
     @Override
     public Service remove(String serviceName) {
+        checkIsNull(serviceName);
         int counter = 0;
         for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
             if (currentNode.getValue().getName().equals(serviceName)) {
@@ -142,8 +151,7 @@ public class EntityTariff implements Tariff {
             }
             counter++;
         }
-
-        return null;
+        throw new NoSuchElementException();
     }
 
     @Override
@@ -163,6 +171,7 @@ public class EntityTariff implements Tariff {
     }
 
     public Service[] getServices(ServiceTypes type) {
+        checkIsNull(type);
         int count = 0;
         for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
             if (currentNode.getValue().getType() == type) {
@@ -206,14 +215,16 @@ public class EntityTariff implements Tariff {
 
     @Override
     public Boolean remove(Service service) {
-        return  this.remove(this.indexOf(service)) != null;
+        checkIsNull(service);
+        return this.remove(this.indexOf(service)) != null;
     }
 
     @Override
     public int indexOf(Service service) {
+        checkIsNull(service);
         int count = 0;
         for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-            if (service.equals(currentNode.getValue())){
+            if (service.equals(currentNode.getValue())) {
                 return count;
             }
             count++;
@@ -223,14 +234,27 @@ public class EntityTariff implements Tariff {
 
     @Override
     public int lastIndexOf(Service service) {
+        checkIsNull(service);
         int count = size - 1;
         for (Node currentNode = this.tail; currentNode != null; currentNode = currentNode.getPrevious()) {
-            if (service.equals(currentNode.getValue())){
+            if (service.equals(currentNode.getValue())) {
                 return count;
             }
             count--;
         }
         return -1;
+    }
+
+    private void checkIsNull(Object o){
+        if (Objects.isNull(o)){
+            throw new NullPointerException();
+        }
+    }
+
+    private void checkIndex(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        }
     }
 
     @Override

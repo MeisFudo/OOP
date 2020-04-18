@@ -6,19 +6,23 @@ import PO82.Skvortsov.OOP.model.tariff.EntityTariff;
 import PO82.Skvortsov.OOP.model.tariff.IndividualsTariff;
 import PO82.Skvortsov.OOP.model.tariff.Tariff;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class EntityAccount extends AbstractAccount {
 
     private String name;
 
-    public EntityAccount(long number, String name, Tariff tariff) {
-        super(number, tariff);
+    public EntityAccount(long number, String name, Tariff tariff, LocalDate registrationDate) {
+        super(number, tariff, registrationDate);
+        if (Objects.isNull(name)) {
+            throw new NullPointerException();
+        }
         this.name = name;
     }
 
     public EntityAccount(long number, String name) {
-        this(number, name, new EntityTariff(new Service()));
+        this(number, name, new EntityTariff(new Service()), LocalDate.now());
     }
 
     public String getName() {
@@ -26,6 +30,9 @@ public class EntityAccount extends AbstractAccount {
     }
 
     public void setName(String name) {
+        if (Objects.isNull(name)) {
+            throw new NullPointerException();
+        }
         this.name = name;
     }
 
