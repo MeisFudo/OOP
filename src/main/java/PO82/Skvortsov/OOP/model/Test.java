@@ -1,7 +1,9 @@
 package PO82.Skvortsov.OOP.model;
 
 
+import PO82.Skvortsov.OOP.model.account.EntityAccount;
 import PO82.Skvortsov.OOP.model.account.IndividualAccount;
+import PO82.Skvortsov.OOP.model.manager.AccountsManager;
 
 import java.time.LocalDate;
 
@@ -21,8 +23,25 @@ public class Test {
         } catch (Exception e) {
             System.out.println("null");
         }
-        IndividualAccount individualAccount = new IndividualAccount(1, new Person("fName","sName"));
-        System.out.println(individualAccount.toString());
+        try {
+            new IndividualAccount(1, new Person("fName", "sName"));
+        }catch (Exception e) {
+            System.out.println("IllegalArgumentException");
+        }
+        try {
+            AccountsManager accountsManager = new AccountsManager(new IndividualAccount(1000000000002L, new Person("fName", "sName")),
+                    new EntityAccount(1000000000001L, "name"));
+            accountsManager.add(new EntityAccount(1000000000001L, "name"));
+        }catch (Exception e){
+            System.out.println("DublicateAccountNumberException");
+        }
+        try {
+            AccountsManager accountsManager = new AccountsManager(new IndividualAccount(1000000000002L, new Person("fName", "sName")),
+                    new EntityAccount(1000000000001L, "name"));
+            accountsManager.add(null);
+        }catch (Exception e){
+            System.out.println("null");
+        }
     }
 
     private static void print(Service... services) {
