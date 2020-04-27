@@ -13,7 +13,7 @@ import PO82.Skvortsov.OOP.model.tariff.Tariff;
 
 import java.util.*;
 
-public class AccountsManager {
+public class AccountsManager implements Iterable<Account> {
     private static final int SIZE_FACTOR = 2;
     private static final int SERVICE_CHARGE = 50;
 
@@ -38,7 +38,7 @@ public class AccountsManager {
     public Account[] getAccounts() {
         Account[] accounts = new Account[size];
         int count = 0;
-        for (Account account : this.accounts) {
+        for (Account account : AccountsManager.this) {
             if (account != null) {
                 accounts[count] = account;
                 count++;
@@ -50,7 +50,7 @@ public class AccountsManager {
     public Account[] getAccounts(ServiceTypes serviceType) {
         checkIsNull(serviceType);
         LinkedList<Account> accounts = new LinkedList<>();
-        for (Account account : this.accounts) {
+        for (Account account : AccountsManager.this) {
             if (checkServiceType(account.getTariff(), serviceType)) {
                 accounts.add(account);
             }
@@ -60,7 +60,7 @@ public class AccountsManager {
 
     public Account[] getEntityAccount() {
         LinkedList<Account> accounts = new LinkedList<>();
-        for (Account account : this.accounts) {
+        for (Account account : AccountsManager.this) {
             if (account.getClass() == EntityAccount.class) {
                 accounts.add(account);
             }
@@ -70,7 +70,7 @@ public class AccountsManager {
 
     public Account[] getIndividualAccount() {
         LinkedList<Account> accounts = new LinkedList<>();
-        for (Account account : this.accounts) {
+        for (Account account : AccountsManager.this) {
             if (account.getClass() == IndividualAccount.class) {
                 accounts.add(account);
             }
@@ -93,7 +93,7 @@ public class AccountsManager {
         if (accountNumber < 1000000000001L || accountNumber > 999999999999999L) {
             throw new IllegalAccountNumber();
         }
-        for (Account account : accounts) {
+        for (Account account : AccountsManager.this) {
             if (account != null && accountNumber == account.getNumber()) {
                 return account;
             }
@@ -105,7 +105,7 @@ public class AccountsManager {
         if (accountNumber < 1000000000001L || accountNumber > 999999999999999L) {
             throw new IllegalAccountNumber();
         }
-        for (Account account : accounts) {
+        for (Account account : AccountsManager.this) {
             if (account != null && accountNumber == account.getNumber()) {
                 return account.getTariff();
             }
@@ -118,7 +118,7 @@ public class AccountsManager {
         if (accountNumber < 1000000000001L || accountNumber > 999999999999999L) {
             throw new IllegalAccountNumber();
         }
-        for (Account account : accounts) {
+        for (Account account : AccountsManager.this) {
             if (account != null && accountNumber == account.getNumber()) {
                 Tariff currentTariff = account.getTariff();
                 account.setTariff(tariff);
@@ -169,7 +169,7 @@ public class AccountsManager {
     }
 
     private void checkAccountNumber(long accountNumber) throws DublicateAccountNumberException {
-        for (Account account : this.accounts) {
+        for (Account account : AccountsManager.this) {
             if (account.getNumber() == accountNumber){
                 throw new DublicateAccountNumberException();
             }
@@ -250,5 +250,40 @@ public class AccountsManager {
             }
         }
         return result.toString();
+    }
+
+    @Override
+    public Iterator<Account> iterator() {
+        return new AccountIterator();
+    }
+
+    private class AccountIterator implements Iterator<Account> {
+        int cursor;
+        int lastRet = -1;
+
+        @Override
+        public boolean hasNext() {
+            return cursor != size;
+        }
+
+        @Override
+        public Account next() {
+            int i = cursor;
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            cursor = i + 1;
+            return accounts[lastRet = i];
+        }
+
+        @Override
+        public void remove() {
+            if (lastRet < 0) {
+                throw new IllegalStateException();
+            }
+            AccountsManager.this.remove(lastRet);
+            cursor = lastRet;
+            lastRet = -1;
+        }
     }
 }

@@ -5,10 +5,8 @@ import PO82.Skvortsov.OOP.model.ServiceTypes;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class IndividualsTariff implements Tariff {
     private static final int SIZE_FACTOR = 2;
@@ -36,39 +34,6 @@ public class IndividualsTariff implements Tariff {
         return services[index];
     }
 
-    public Service get(String name) {
-        checkIsNull(name);
-        for (Service service : services) {
-            if (service.getName().equals(name)) {
-                return service;
-            }
-        }
-        return null;
-    }
-
-    public Service[] getServices() {
-        Service[] services = new Service[size];
-        for (int i = 0, count = 0; i < this.services.length; i++) {
-            if (this.services[i] != null) {
-                services[count] = this.services[i];
-                count++;
-            }
-        }
-        return services;
-    }
-
-    public Service[] getServices(ServiceTypes type) {
-        checkIsNull(type);
-        LinkedList<Service> services = new LinkedList<>();
-        for (Service service : this.services) {
-            if (service != null && service.getType() == type) {
-                services.add(service);
-            }
-        }
-        return services.toArray(new Service[0]);
-    }
-
-
     public Service set(Service service, int index) {
         checkIsNull(service);
         checkIndex(index);
@@ -83,17 +48,6 @@ public class IndividualsTariff implements Tariff {
     public int size() {
         return size;
     }
-
-    public boolean hasService(String serviceName) {
-        checkIsNull(serviceName);
-        for (Service service : services) {
-            if (service != null && service.getName().equals(serviceName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 
     public boolean add(Service service, int index) {
         checkIsNull(service);
@@ -164,66 +118,14 @@ public class IndividualsTariff implements Tariff {
         return removeService;
     }
 
-    public Service[] sortedServicesByCost() {
-        Service[] sortedService = getServices();
-        for (int i = sortedService.length - 1; i > 0; i--) {
-            for (int j = 0; j < i; j++) {
-                if (sortedService[j].getCost() > sortedService[j + 1].getCost()) {
-                    Service currentService = sortedService[j];
-                    sortedService[j] = sortedService[j + 1];
-                    sortedService[j + 1] = currentService;
-                }
-            }
-        }
-        return sortedService;
-    }
-
-    public double cost() {
-        double cost = SERVICE_CHARGE;
-        for (Service service : services) {
-            if (service != null) {
-                if (Period.between(service.getActivationDate(), LocalDate.now()).getMonths() < 1){
-                    cost += service.getCost() *
-                            Period.between(service.getActivationDate(), LocalDate.now()).getDays() /
-                            service.getActivationDate().lengthOfMonth();
-                } else {
-                cost += service.getCost();
-                }
-            }
-        }
-        return cost;
-    }
-
     @Override
     public Boolean remove(Service service) {
         checkIsNull(service);
-        return  this.remove(this.indexOf(service)) != null;
+        return this.remove(this.indexOf(service)) != null;
     }
 
-    @Override
-    public int indexOf(Service service) {
-        checkIsNull(service);
-        for (int i = 0; i < services.length;i++) {
-            if (services[i] != null && services[i].equals(service)){
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    @Override
-    public int lastIndexOf(Service service) {
-        checkIsNull(service);
-        for (int i = services.length - 1; i >= 0; i--) {
-            if (services[i] != null && services[i].equals(service)){
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    private void checkIsNull(Object o){
-        if (Objects.isNull(o)){
+    private void checkIsNull(Object o) {
+        if (Objects.isNull(o)) {
             throw new NullPointerException();
         }
     }
@@ -237,16 +139,16 @@ public class IndividualsTariff implements Tariff {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        for (Service service: this.getServices()) {
+        for (Service service : this.getServices()) {
             result.append(service.toString()).append(System.lineSeparator());
         }
         return result.toString();
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         int hashCode = 31;
-        for (Service service: this.getServices()) {
+        for (Service service : this.getServices()) {
             hashCode *= service.hashCode();
         }
         return hashCode;
@@ -263,7 +165,42 @@ public class IndividualsTariff implements Tariff {
 
 
     @Override
-    public Tariff clone() throws CloneNotSupportedException{
+    public Tariff clone() throws CloneNotSupportedException {
         return (Tariff) super.clone();
+    }
+
+    @Override
+    public Iterator<Service> iterator() {
+        return new ServiceIterator();
+    }
+
+    private class ServiceIterator implements Iterator<Service> {
+        int cursor;
+        int lastRet = -1;
+
+        @Override
+        public boolean hasNext() {
+            return cursor != size;
+        }
+
+        @Override
+        public Service next() {
+            int i = cursor;
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            cursor = i + 1;
+            return services[lastRet = i];
+        }
+
+        @Override
+        public void remove() {
+            if (lastRet < 0) {
+                throw new IllegalStateException();
+            }
+            IndividualsTariff.this.remove(lastRet);
+            cursor = lastRet;
+            lastRet = -1;
+        }
     }
 }

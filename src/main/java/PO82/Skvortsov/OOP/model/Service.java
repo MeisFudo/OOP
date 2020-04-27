@@ -3,7 +3,7 @@ package PO82.Skvortsov.OOP.model;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public final class Service implements Cloneable {
+public final class Service implements Cloneable, Comparable<Service> {
     private static final String DEFAULT_NAME = "Internet 100MB\\sec";
     private static final int DEFAULT_PRICE = 300;
 
@@ -12,7 +12,7 @@ public final class Service implements Cloneable {
     private final ServiceTypes type;
     private LocalDate activationDate;
 
-    public Service(String name, int cost, ServiceTypes type, LocalDate activationDate) {
+    public Service(String name, double cost, ServiceTypes type, LocalDate activationDate) {
         if (Objects.isNull(name) || Objects.isNull(type) || Objects.isNull(activationDate)) {
             throw new NullPointerException();
         }
@@ -69,5 +69,10 @@ public final class Service implements Cloneable {
     @Override
     public Service clone() throws CloneNotSupportedException {
         return (Service) super.clone();
+    }
+
+    @Override
+    public int compareTo(Service anotherService) {
+        return Double.compare(this.getCost(), anotherService.getCost());
     }
 }

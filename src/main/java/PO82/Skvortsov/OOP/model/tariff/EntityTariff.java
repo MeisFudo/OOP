@@ -4,8 +4,8 @@ import PO82.Skvortsov.OOP.model.Service;
 import PO82.Skvortsov.OOP.model.ServiceTypes;
 import PO82.Skvortsov.OOP.model.list.Node;
 
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class EntityTariff implements Tariff {
     private static final int SERVICE_CHARGE = 50;
@@ -77,28 +77,6 @@ public class EntityTariff implements Tariff {
     }
 
     @Override
-    public Service get(String serviceName) {
-        checkIsNull(serviceName);
-        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-            if (currentNode.getValue().getName().equals(serviceName)) {
-                return currentNode.getValue();
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public boolean hasService(String serviceName) {
-        checkIsNull(serviceName);
-        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-            if (currentNode.getValue().getName().equals(serviceName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
     public Service set(Service service, int index) {
         checkIsNull(service);
         checkIndex(index);
@@ -134,7 +112,6 @@ public class EntityTariff implements Tariff {
             }
             counter++;
         }
-
         return null;
     }
 
@@ -160,93 +137,13 @@ public class EntityTariff implements Tariff {
     }
 
     @Override
-    public Service[] getServices() {
-        Service[] services = new Service[size];
-        int index = 0;
-        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-            services[index] = currentNode.getValue();
-            index++;
-        }
-        return services;
-    }
-
-    public Service[] getServices(ServiceTypes type) {
-        checkIsNull(type);
-        int count = 0;
-        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-            if (currentNode.getValue().getType() == type) {
-                count++;
-            }
-        }
-        Service[] services = new Service[count];
-        count = 0;
-        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-            if (currentNode.getValue().getType() == type) {
-                services[count] = currentNode.getValue();
-                count++;
-            }
-        }
-        return services;
-    }
-
-    @Override
-    public Service[] sortedServicesByCost() {
-        Service[] sortedService = getServices();
-        for (int i = sortedService.length - 1; i > 0; i--) {
-            for (int j = 0; j < i; j++) {
-                if (sortedService[j].getCost() > sortedService[j + 1].getCost()) {
-                    Service currentService = sortedService[j];
-                    sortedService[j] = sortedService[j + 1];
-                    sortedService[j + 1] = currentService;
-                }
-            }
-        }
-        return sortedService;
-    }
-
-    @Override
-    public double cost() {
-        double cost = SERVICE_CHARGE;
-        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-            cost += currentNode.getValue().getCost();
-        }
-        return cost;
-    }
-
-    @Override
     public Boolean remove(Service service) {
         checkIsNull(service);
         return this.remove(this.indexOf(service)) != null;
     }
 
-    @Override
-    public int indexOf(Service service) {
-        checkIsNull(service);
-        int count = 0;
-        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-            if (service.equals(currentNode.getValue())) {
-                return count;
-            }
-            count++;
-        }
-        return -1;
-    }
-
-    @Override
-    public int lastIndexOf(Service service) {
-        checkIsNull(service);
-        int count = size - 1;
-        for (Node currentNode = this.tail; currentNode != null; currentNode = currentNode.getPrevious()) {
-            if (service.equals(currentNode.getValue())) {
-                return count;
-            }
-            count--;
-        }
-        return -1;
-    }
-
-    private void checkIsNull(Object o){
-        if (Objects.isNull(o)){
+    private void checkIsNull(Object o) {
+        if (Objects.isNull(o)) {
             throw new NullPointerException();
         }
     }
@@ -295,4 +192,49 @@ public class EntityTariff implements Tariff {
     public Tariff clone() throws CloneNotSupportedException {
         return (Tariff) super.clone();
     }
+
+    @Override
+    public Iterator<Service> iterator() {
+        return new ServiceIterator();
+    }
+
+    private class ServiceIterator implements Iterator<Service> {
+        private Node lastReturned;
+        private Node next = head;
+        private int nextIndex;
+
+        @Override
+        public boolean hasNext() {
+            return nextIndex < size;
+        }
+
+        @Override
+        public Service next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            lastReturned = next;
+            next = next.getNext();
+            nextIndex++;
+            return lastReturned.getValue();
+        }
+
+        @Override
+        public void remove() {
+            if (lastReturned == null) {
+                throw new IllegalStateException();
+            }
+            Node lastNext = lastReturned.getNext();
+            lastNext.getPrevious().setNext(lastNext.getNext());
+            lastNext.getNext().setPrevious(lastNext.getPrevious());
+            if (next == lastReturned) {
+                next = lastNext;
+            }else {
+                nextIndex--;
+            }
+            lastReturned = null;
+        }
+    }
 }
+
+
