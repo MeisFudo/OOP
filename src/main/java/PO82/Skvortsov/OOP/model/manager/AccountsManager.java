@@ -7,8 +7,6 @@ import PO82.Skvortsov.OOP.model.ServiceTypes;
 import PO82.Skvortsov.OOP.model.account.Account;
 import PO82.Skvortsov.OOP.model.account.EntityAccount;
 import PO82.Skvortsov.OOP.model.account.IndividualAccount;
-import PO82.Skvortsov.OOP.model.tariff.EntityTariff;
-import PO82.Skvortsov.OOP.model.tariff.IndividualsTariff;
 import PO82.Skvortsov.OOP.model.tariff.Tariff;
 
 import java.util.*;
@@ -47,46 +45,64 @@ public class AccountsManager implements Iterable<Account> {
         return accounts;
     }
 
-    public Account[] getAccounts(ServiceTypes serviceType) {
+    public Set<Account> getAccounts(String serviceName) {
+        checkIsNull(serviceName);
+        HashSet<Account> accounts = new HashSet<>();
+        for (Account account : AccountsManager.this) {
+            if (checkServiceName(account.getTariff(), serviceName)) {
+                accounts.add(account);
+            }
+        }
+        return accounts;
+    }
+
+    private boolean checkServiceName(Tariff tariff, String name) {
+        for (Service service : tariff.toArray()) {
+            if (service.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Set<Account> getAccounts(ServiceTypes serviceType) {
         checkIsNull(serviceType);
-        LinkedList<Account> accounts = new LinkedList<>();
+        HashSet<Account> accounts = new HashSet<>();
         for (Account account : AccountsManager.this) {
             if (checkServiceType(account.getTariff(), serviceType)) {
                 accounts.add(account);
             }
         }
-        return (Account[]) accounts.toArray();
+        return accounts;
     }
 
-    public Account[] getEntityAccount() {
+    private boolean checkServiceType(Tariff tariff, ServiceTypes type) {
+        for (Service service : tariff.toArray()) {
+            if (service.getType() == type) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<Account> getEntityAccount() {
         LinkedList<Account> accounts = new LinkedList<>();
         for (Account account : AccountsManager.this) {
             if (account.getClass() == EntityAccount.class) {
                 accounts.add(account);
             }
         }
-        return accounts.toArray(new Account[0]);
+        return accounts;
     }
 
-    public Account[] getIndividualAccount() {
+    public List<Account> getIndividualAccount() {
         LinkedList<Account> accounts = new LinkedList<>();
         for (Account account : AccountsManager.this) {
             if (account.getClass() == IndividualAccount.class) {
                 accounts.add(account);
             }
         }
-        return accounts.toArray(new Account[0]);
-    }
-
-    private boolean checkServiceType(Tariff tariff, ServiceTypes type) {
-        checkIsNull(tariff);
-        checkIsNull(type);
-        for (Service service : tariff.getServices()) {
-            if (service.getType() == type) {
-                return true;
-            }
-        }
-        return false;
+        return accounts;
     }
 
     public Account getAccount(long accountNumber) {

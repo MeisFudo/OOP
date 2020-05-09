@@ -1,12 +1,8 @@
 package PO82.Skvortsov.OOP.model.tariff;
 
 import PO82.Skvortsov.OOP.model.Service;
-import PO82.Skvortsov.OOP.model.ServiceTypes;
 
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.*;
-import java.util.function.Consumer;
 
 public class IndividualsTariff implements Tariff {
     private static final int SIZE_FACTOR = 2;
@@ -103,6 +99,12 @@ public class IndividualsTariff implements Tariff {
         throw new NoSuchElementException();
     }
 
+    public void clear() {
+        for (int i = 0; i < size; i++)
+            services[i] = null;
+        size = 0;
+    }
+
     private Service shift(int index) {
         checkIndex(index);
         if (index >= services.length) {
@@ -139,7 +141,7 @@ public class IndividualsTariff implements Tariff {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        for (Service service : this.getServices()) {
+        for (Service service : this.toArray()) {
             result.append(service.toString()).append(System.lineSeparator());
         }
         return result.toString();
@@ -148,7 +150,7 @@ public class IndividualsTariff implements Tariff {
     @Override
     public int hashCode() {
         int hashCode = 31;
-        for (Service service : this.getServices()) {
+        for (Service service : this.toArray()) {
             hashCode *= service.hashCode();
         }
         return hashCode;

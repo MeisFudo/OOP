@@ -1,11 +1,8 @@
 package PO82.Skvortsov.OOP.model.tariff;
 
 import PO82.Skvortsov.OOP.model.Service;
-import PO82.Skvortsov.OOP.model.ServiceTypes;
-import PO82.Skvortsov.OOP.model.list.Node;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 public class EntityTariff implements Tariff {
     private static final int SERVICE_CHARGE = 50;
@@ -34,7 +31,7 @@ public class EntityTariff implements Tariff {
         } else {
             Node previousNode = tail == null ? head : tail;
             tail = new Node(null, previousNode, service);
-            previousNode.setNext(tail);
+            previousNode.next  = tail;
         }
         size++;
         return true;
@@ -52,9 +49,9 @@ public class EntityTariff implements Tariff {
             Node currentNode = head;
             for (int i = 0; currentNode != null; i++) {
                 if (i == index) {
-                    currentNode.getPrevious().setNext(new Node(currentNode, currentNode.getPrevious(), service));
+                    currentNode.prev.next = new Node(currentNode, currentNode.prev, service);
                 }
-                currentNode = currentNode.getNext();
+                currentNode = currentNode.next;
             }
         }
         size++;
@@ -66,9 +63,9 @@ public class EntityTariff implements Tariff {
         checkIndex(index);
         if (index < size) {
             int counter = 0;
-            for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
+            for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.next) {
                 if (counter == index) {
-                    return currentNode.getValue();
+                    return currentNode.value;
                 }
                 counter++;
             }
@@ -89,11 +86,11 @@ public class EntityTariff implements Tariff {
             Node currentNode = head;
             for (int i = 0; currentNode != null; i++) {
                 if (i == index) {
-                    Service currentService = currentNode.getValue();
-                    currentNode.setValue(service);
+                    Service currentService = currentNode.value;
+                    currentNode.value = service;
                     return currentService;
                 }
-                currentNode = currentNode.getNext();
+                currentNode = currentNode.next;
             }
         }
         return null;
@@ -103,12 +100,10 @@ public class EntityTariff implements Tariff {
     public Service remove(int index) {
         checkIndex(index);
         int counter = 0;
-        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
+        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.next) {
             if (counter == index) {
-                currentNode.getPrevious().setNext(currentNode.getNext());
-                currentNode.getNext().setPrevious(currentNode.getPrevious());
                 size--;
-                return currentNode.getValue();
+                return unlink(currentNode);
             }
             counter++;
         }
@@ -119,16 +114,39 @@ public class EntityTariff implements Tariff {
     public Service remove(String serviceName) {
         checkIsNull(serviceName);
         int counter = 0;
-        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-            if (currentNode.getValue().getName().equals(serviceName)) {
-                currentNode.getPrevious().setNext(currentNode.getNext());
-                currentNode.getNext().setPrevious(currentNode.getPrevious());
+        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.next) {
+            if (currentNode.value.getName().equals(serviceName)) {
                 size--;
-                return currentNode.getValue();
+                return unlink(currentNode);
             }
             counter++;
         }
         throw new NoSuchElementException();
+    }
+
+    Service unlink(Node node) {
+        // assert node != null;
+        final Service element = node.value;
+        final Node next = node.next;
+        final Node prev = node.prev;
+
+        if (prev == null) {
+            head = next;
+        } else {
+            prev.next = next;
+            node.prev = null;
+        }
+
+        if (next == null) {
+            tail = prev;
+        } else {
+            next.prev = prev;
+            node.next = null;
+        }
+
+        node.value = null;
+        size--;
+        return element;
     }
 
     @Override
@@ -140,6 +158,18 @@ public class EntityTariff implements Tariff {
     public Boolean remove(Service service) {
         checkIsNull(service);
         return this.remove(this.indexOf(service)) != null;
+    }
+
+    public void clear() {
+        for (Node x = head; x != null; ) {
+            Node next = x.next;
+            x.value = null;
+            x.next = null;
+            x.prev = null;
+            x = next;
+        }
+        head = tail = null;
+        size = 0;
     }
 
     private void checkIsNull(Object o) {
@@ -157,8 +187,8 @@ public class EntityTariff implements Tariff {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-            result.append(currentNode.getValue().toString()).append(System.lineSeparator());
+        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.next) {
+            result.append(currentNode.value.toString()).append(System.lineSeparator());
         }
         return result.toString();
     }
@@ -166,8 +196,8 @@ public class EntityTariff implements Tariff {
     @Override
     public int hashCode() {
         int hashCode = 71;
-        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-            hashCode *= currentNode.getValue().hashCode();
+        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.next) {
+            hashCode *= currentNode.value.hashCode();
         }
         return hashCode;
     }
@@ -179,8 +209,8 @@ public class EntityTariff implements Tariff {
         EntityTariff that = (EntityTariff) o;
         if (size != that.size()) return false;
         int count = 0;
-        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.getNext()) {
-            if (!currentNode.getValue().equals(that.get(count))) {
+        for (Node currentNode = this.head; currentNode != null; currentNode = currentNode.next) {
+            if (!currentNode.value.equals(that.get(count))) {
                 return false;
             }
             count++;
@@ -196,6 +226,22 @@ public class EntityTariff implements Tariff {
     @Override
     public Iterator<Service> iterator() {
         return new ServiceIterator();
+    }
+
+    private class Node {
+        Service value;
+        Node next;
+        Node prev;
+
+        public Node(Node next, Node prev, Service value) {
+            this.value = value;
+            this.next = next;
+            this.prev = prev;
+        }
+
+        public Node() {
+            this(null, null, null);
+        }
     }
 
     private class ServiceIterator implements Iterator<Service> {
@@ -214,9 +260,9 @@ public class EntityTariff implements Tariff {
                 throw new NoSuchElementException();
             }
             lastReturned = next;
-            next = next.getNext();
+            next = next.next;
             nextIndex++;
-            return lastReturned.getValue();
+            return lastReturned.value;
         }
 
         @Override
@@ -224,12 +270,11 @@ public class EntityTariff implements Tariff {
             if (lastReturned == null) {
                 throw new IllegalStateException();
             }
-            Node lastNext = lastReturned.getNext();
-            lastNext.getPrevious().setNext(lastNext.getNext());
-            lastNext.getNext().setPrevious(lastNext.getPrevious());
+            Node lastNext = lastReturned.next;
+            unlink(lastReturned);
             if (next == lastReturned) {
                 next = lastNext;
-            }else {
+            } else {
                 nextIndex--;
             }
             lastReturned = null;
